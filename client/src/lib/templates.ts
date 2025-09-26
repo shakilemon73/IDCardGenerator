@@ -1,5 +1,11 @@
+// This file previously contained static template data that has been moved to the database.
+// Templates are now seeded via the API endpoint: POST /api/templates/seed
+// and retrieved via: GET /api/templates
+
 import { TemplateDesign } from "@/types";
 
+// Legacy static templates - now moved to database via seeding system
+// This export is kept for backwards compatibility but is no longer used
 export const defaultTemplates: Array<{
   id: string;
   name: string;

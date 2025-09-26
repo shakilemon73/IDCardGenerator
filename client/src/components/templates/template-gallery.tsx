@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Template } from "@shared/schema";
-import { defaultTemplates } from "@/lib/templates";
 import TemplateCard from "./template-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -14,21 +13,8 @@ interface TemplateGalleryProps {
 export default function TemplateGallery({ templates, isLoading, showAll = false }: TemplateGalleryProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
-  // Combine database templates with default templates
-  const allTemplates = [...templates, ...defaultTemplates.map(dt => ({
-    id: dt.id,
-    name: dt.name,
-    description: dt.description,
-    category: 'student',
-    isDefault: true,
-    isPopular: dt.isPopular,
-    usageCount: Math.floor(Math.random() * 300),
-    design: dt.design,
-    preview: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }))];
-
+  // Use only database templates
+  const allTemplates = templates;
   const displayTemplates = showAll ? allTemplates : allTemplates.slice(0, 8);
 
   if (isLoading) {

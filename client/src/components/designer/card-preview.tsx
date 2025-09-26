@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Download, Share2 } from "lucide-react";
+import { useSchoolSettings } from "@/hooks/use-settings";
 
 interface CardPreviewProps {
   design: TemplateDesign | null;
@@ -12,6 +13,8 @@ interface CardPreviewProps {
 }
 
 export default function CardPreview({ design, student, template }: CardPreviewProps) {
+  const { settings: schoolSettings } = useSchoolSettings();
+
   if (!design || !student || !template) {
     return (
       <div className="h-full flex items-center justify-center" data-testid="card-preview-empty">
@@ -30,10 +33,10 @@ export default function CardPreview({ design, student, template }: CardPreviewPr
       .replace(/\{\{class\}\}/g, student.class)
       .replace(/\{\{section\}\}/g, student.section || '')
       .replace(/\{\{rollNumber\}\}/g, student.rollNumber || '')
-      .replace(/\{\{schoolName\}\}/g, 'DHAKA INTERNATIONAL SCHOOL')
-      .replace(/\{\{schoolNameBengali\}\}/g, 'ঢাকা আন্তর্জাতিক বিদ্যালয়')
-      .replace(/\{\{validTill\}\}/g, 'Dec 2024')
-      .replace(/\{\{year\}\}/g, new Date().getFullYear().toString());
+      .replace(/\{\{schoolName\}\}/g, schoolSettings.schoolNameEnglish)
+      .replace(/\{\{schoolNameBengali\}\}/g, schoolSettings.schoolNameBengali)
+      .replace(/\{\{validTill\}\}/g, schoolSettings.validTill)
+      .replace(/\{\{year\}\}/g, schoolSettings.academicYear);
   };
 
   return (

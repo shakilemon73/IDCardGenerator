@@ -9,6 +9,7 @@ import Students from "@/pages/students";
 import Templates from "@/pages/templates";
 import Designer from "@/pages/designer";
 import PrintManager from "@/pages/print-manager";
+import Settings from "@/pages/settings";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
 
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/templates" component={Templates} />
       <Route path="/designer" component={Designer} />
       <Route path="/print-manager" component={PrintManager} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );

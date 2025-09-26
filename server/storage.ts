@@ -46,6 +46,10 @@ export interface IStorage {
   getSettings(category?: string): Promise<Setting[]>;
   setSetting(setting: InsertSetting): Promise<Setting>;
   
+  // Template Seeding
+  seedTemplates(templates: InsertTemplate[]): Promise<Template[]>;
+  clearAllTemplates(): Promise<void>;
+  
   // Statistics
   getStats(): Promise<{
     totalStudents: number;
@@ -160,6 +164,23 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTemplate(id: string): Promise<void> {
     await db.delete(templates).where(eq(templates.id, id));
+  }
+
+  // Template Seeding
+  async seedTemplates(templateData: InsertTemplate[]): Promise<Template[]> {
+    const createdTemplates = [];
+    for (const templateItem of templateData) {
+      const [template] = await db
+        .insert(templates)
+        .values(templateItem)
+        .returning();
+      createdTemplates.push(template);
+    }
+    return createdTemplates;
+  }
+
+  async clearAllTemplates(): Promise<void> {
+    await db.delete(templates);
   }
 
   // Print Jobs

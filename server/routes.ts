@@ -274,6 +274,615 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/templates/:id", async (req, res) => {
+    try {
+      await storage.deleteTemplate(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete template" });
+    }
+  });
+
+  app.post("/api/templates/seed", async (req, res) => {
+    try {
+      // Define the default templates to seed
+      const defaultTemplatesData = [
+        {
+          id: "bangladesh-heritage",
+          name: "Bangladesh Heritage",
+          description: "Patriotic design with flag colors",
+          category: "student",
+          isDefault: true,
+          isPopular: true,
+          usageCount: 145,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(45deg, #006a4e 0%, #f42a41 50%, #006a4e 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "school-name",
+                type: "text",
+                position: { x: 5, y: 5 },
+                size: { width: 75.6, height: 8 },
+                content: "{{schoolName}}",
+                style: {
+                  fontSize: 8,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "school-name-bengali",
+                type: "text",
+                position: { x: 5, y: 12 },
+                size: { width: 75.6, height: 6 },
+                content: "{{schoolNameBengali}}",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 20 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-name",
+                type: "text",
+                position: { x: 25, y: 20 },
+                size: { width: 55, height: 5 },
+                content: "{{studentName}}",
+                style: {
+                  fontSize: 7,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "student-name-bengali",
+                type: "text",
+                position: { x: 25, y: 26 },
+                size: { width: 55, height: 4 },
+                content: "{{studentNameBengali}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "id-number",
+                type: "text",
+                position: { x: 25, y: 32 },
+                size: { width: 55, height: 4 },
+                content: "ID: {{idNumber}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "class",
+                type: "text",
+                position: { x: 25, y: 36 },
+                size: { width: 55, height: 4 },
+                content: "Class: {{class}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "validity",
+                type: "text",
+                position: { x: 5, y: 45 },
+                size: { width: 75.6, height: 4 },
+                content: "Valid Till: {{validTill}}",
+                style: {
+                  fontSize: 4,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "modern-professional",
+          name: "Modern Professional",
+          description: "Clean blue gradient design",
+          category: "student",
+          isDefault: true,
+          isPopular: true,
+          usageCount: 203,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #2563eb 0%, #1e40af 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "logo",
+                type: "image",
+                position: { x: 5, y: 5 },
+                size: { width: 8, height: 8 },
+                content: "{{schoolLogo}}",
+                style: {}
+              },
+              {
+                id: "id-badge",
+                type: "text",
+                position: { x: 70, y: 5 },
+                size: { width: 10, height: 8 },
+                content: "ID",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 16 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-name",
+                type: "text",
+                position: { x: 25, y: 16 },
+                size: { width: 55, height: 6 },
+                content: "{{studentName}}",
+                style: {
+                  fontSize: 8,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "student-details",
+                type: "text",
+                position: { x: 25, y: 24 },
+                size: { width: 55, height: 12 },
+                content: "{{studentDetails}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "academic-green",
+          name: "Academic Green",
+          description: "Traditional academic style",
+          category: "student",
+          isDefault: true,
+          isPopular: false,
+          usageCount: 87,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #059669 0%, #047857 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "header-line",
+                type: "text",
+                position: { x: 5, y: 5 },
+                size: { width: 75.6, height: 3 },
+                content: "STUDENT IDENTIFICATION CARD",
+                style: {
+                  fontSize: 4,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "school-logo",
+                type: "image",
+                position: { x: 35, y: 8 },
+                size: { width: 15, height: 8 },
+                content: "{{schoolLogo}}",
+                style: {}
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 18 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-info",
+                type: "text",
+                position: { x: 25, y: 18 },
+                size: { width: 55, height: 20 },
+                content: "{{studentInfo}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "vibrant-orange",
+          name: "Vibrant Orange",
+          description: "Energetic orange design",
+          category: "student",
+          isDefault: true,
+          isPopular: false,
+          usageCount: 124,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #ea580c 0%, #dc2626 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "school-badge",
+                type: "image",
+                position: { x: 5, y: 5 },
+                size: { width: 8, height: 8 },
+                content: "{{schoolLogo}}",
+                style: {}
+              },
+              {
+                id: "year",
+                type: "text",
+                position: { x: 70, y: 5 },
+                size: { width: 10, height: 8 },
+                content: "{{year}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 16 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-details",
+                type: "text",
+                position: { x: 25, y: 16 },
+                size: { width: 55, height: 20 },
+                content: "{{studentDetails}}",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "royal-purple",
+          name: "Royal Purple",
+          description: "Elegant purple theme",
+          category: "student",
+          isDefault: true,
+          isPopular: true,
+          usageCount: 178,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "header-border",
+                type: "text",
+                position: { x: 5, y: 5 },
+                size: { width: 75.6, height: 2 },
+                content: "",
+                style: {
+                  fontSize: 1,
+                  fontFamily: "Inter",
+                  color: "#ffffff"
+                }
+              },
+              {
+                id: "school-name",
+                type: "text",
+                position: { x: 5, y: 8 },
+                size: { width: 75.6, height: 6 },
+                content: "{{schoolName}}",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 16 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-info",
+                type: "text",
+                position: { x: 25, y: 16 },
+                size: { width: 55, height: 20 },
+                content: "{{studentInfo}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "minimalist-dark",
+          name: "Minimalist Dark",
+          description: "Clean dark professional",
+          category: "student",
+          isDefault: true,
+          isPopular: false,
+          usageCount: 93,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #374151 0%, #111827 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "top-line",
+                type: "text",
+                position: { x: 5, y: 8 },
+                size: { width: 75.6, height: 1 },
+                content: "",
+                style: {
+                  fontSize: 1,
+                  fontFamily: "Inter",
+                  color: "#ffffff"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 14 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-details",
+                type: "text",
+                position: { x: 25, y: 14 },
+                size: { width: 55, height: 20 },
+                content: "{{studentDetails}}",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "ocean-teal",
+          name: "Ocean Teal",
+          description: "Fresh teal gradient",
+          category: "student",
+          isDefault: true,
+          isPopular: false,
+          usageCount: 76,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "grid-pattern",
+                type: "text",
+                position: { x: 5, y: 5 },
+                size: { width: 20, height: 8 },
+                content: "",
+                style: {
+                  fontSize: 4,
+                  fontFamily: "Inter",
+                  color: "#ffffff"
+                }
+              },
+              {
+                id: "school-header",
+                type: "text",
+                position: { x: 25, y: 5 },
+                size: { width: 55, height: 8 },
+                content: "{{schoolName}}",
+                style: {
+                  fontSize: 6,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  fontWeight: "bold",
+                  textAlign: "left"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 15 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-info",
+                type: "text",
+                position: { x: 25, y: 15 },
+                size: { width: 55, height: 20 },
+                content: "{{studentInfo}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        },
+        {
+          id: "golden-elite",
+          name: "Golden Elite",
+          description: "Luxury golden design",
+          category: "student",
+          isDefault: true,
+          isPopular: false,
+          usageCount: 156,
+          design: {
+            background: {
+              type: "gradient",
+              value: "linear-gradient(135deg, #d97706 0%, #92400e 100%)"
+            },
+            dimensions: { width: 85.6, height: 54 },
+            elements: [
+              {
+                id: "crown-logo",
+                type: "image",
+                position: { x: 5, y: 5 },
+                size: { width: 8, height: 8 },
+                content: "{{schoolLogo}}",
+                style: {}
+              },
+              {
+                id: "elite-badge",
+                type: "text",
+                position: { x: 60, y: 5 },
+                size: { width: 20, height: 8 },
+                content: "ELITE",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
+                  textAlign: "center"
+                }
+              },
+              {
+                id: "student-photo",
+                type: "image",
+                position: { x: 8, y: 15 },
+                size: { width: 15, height: 20 },
+                content: "{{studentPhoto}}",
+                style: {}
+              },
+              {
+                id: "student-details",
+                type: "text",
+                position: { x: 25, y: 15 },
+                size: { width: 55, height: 20 },
+                content: "{{studentDetails}}",
+                style: {
+                  fontSize: 5,
+                  fontFamily: "Inter",
+                  color: "#ffffff",
+                  textAlign: "left"
+                }
+              }
+            ]
+          }
+        }
+      ];
+
+      // Check if force seed is requested (clears existing templates)
+      const forceSeed = req.body.force === true;
+      
+      if (forceSeed) {
+        await storage.clearAllTemplates();
+        console.log('Cleared existing templates');
+      }
+
+      // Check if templates already exist
+      const existingTemplates = await storage.getTemplates();
+      if (existingTemplates.length > 0 && !forceSeed) {
+        return res.json({
+          message: "Templates already exist. Use 'force: true' in request body to re-seed.",
+          existing: existingTemplates.length,
+          seeded: 0
+        });
+      }
+
+      // Seed templates
+      const seededTemplates = await storage.seedTemplates(defaultTemplatesData);
+      
+      console.log(`Successfully seeded ${seededTemplates.length} templates`);
+      
+      res.json({
+        message: "Templates seeded successfully",
+        seeded: seededTemplates.length,
+        templates: seededTemplates.map(t => ({ id: t.id, name: t.name }))
+      });
+
+    } catch (error) {
+      console.error('Failed to seed templates:', error);
+      res.status(500).json({ 
+        message: "Failed to seed templates",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   // Print Jobs API
   app.get("/api/print-jobs", async (req, res) => {
     try {
@@ -349,6 +958,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/settings/:key", async (req, res) => {
+    try {
+      const setting = await storage.getSetting(req.params.key);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
   app.post("/api/settings", async (req, res) => {
     try {
       const { key, value, category } = req.body;
@@ -358,6 +979,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Failed to save setting:', error);
       const message = error instanceof Error ? error.message : "Failed to save setting";
       res.status(400).json({ message });
+    }
+  });
+
+  // Initialize default settings
+  app.post("/api/settings/initialize", async (req, res) => {
+    try {
+      const defaultSettings = [
+        { key: "school_name_english", value: "School Name", category: "school" },
+        { key: "school_name_bengali", value: "স্কুলের নাম", category: "school" },
+        { key: "valid_till", value: "Dec 2024", category: "school" },
+        { key: "academic_year", value: new Date().getFullYear().toString(), category: "school" },
+        { key: "session_year", value: new Date().getFullYear().toString(), category: "school" },
+        { key: "address", value: "", category: "school" },
+        { key: "phone", value: "", category: "school" },
+        { key: "email", value: "", category: "school" },
+        { key: "website", value: "", category: "school" },
+      ];
+
+      const results = [];
+      for (const setting of defaultSettings) {
+        const existing = await storage.getSetting(setting.key);
+        if (!existing) {
+          const created = await storage.setSetting(setting);
+          results.push(created);
+        }
+      }
+
+      res.json({ 
+        message: "Default settings initialized", 
+        created: results.length,
+        settings: results 
+      });
+    } catch (error) {
+      console.error('Failed to initialize settings:', error);
+      res.status(500).json({ message: "Failed to initialize settings" });
     }
   });
 

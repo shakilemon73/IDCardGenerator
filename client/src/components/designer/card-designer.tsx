@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Student } from "@shared/schema";
 import { TemplateDesign } from "@/types";
+import { useSchoolSettings } from "@/hooks/use-settings";
 
 interface CardDesignerProps {
   design: TemplateDesign | null;
@@ -10,6 +11,7 @@ interface CardDesignerProps {
 
 export default function CardDesigner({ design, student, onDesignChange }: CardDesignerProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const { settings: schoolSettings } = useSchoolSettings();
 
   useEffect(() => {
     if (!design || !canvasRef.current) return;
@@ -44,7 +46,7 @@ export default function CardDesigner({ design, student, onDesignChange }: CardDe
       elementDiv.style.height = `${element.size.height}mm`;
 
       if (element.type === 'text') {
-        elementDiv.textContent = processTemplateContent(element.content, student);
+        elementDiv.textContent = processTemplateContent(element.content, student, schoolSettings);
         if (element.style.fontSize) {
           elementDiv.style.fontSize = `${element.style.fontSize}mm`;
         }
@@ -91,9 +93,9 @@ export default function CardDesigner({ design, student, onDesignChange }: CardDe
     });
 
     canvas.appendChild(cardContainer);
-  }, [design, student]);
+  }, [design, student, schoolSettings]);
 
-  const processTemplateContent = (content: string, student: Student | null): string => {
+  const processTemplateContent = (content: string, student: Student | null, schoolSettings: any): string => {
     if (!student) return content;
 
     return content
@@ -103,10 +105,10 @@ export default function CardDesigner({ design, student, onDesignChange }: CardDe
       .replace(/\{\{class\}\}/g, student.class)
       .replace(/\{\{section\}\}/g, student.section || '')
       .replace(/\{\{rollNumber\}\}/g, student.rollNumber || '')
-      .replace(/\{\{schoolName\}\}/g, 'DHAKA INTERNATIONAL SCHOOL')
-      .replace(/\{\{schoolNameBengali\}\}/g, 'ঢাকা আন্তর্জাতিক বিদ্যালয়')
-      .replace(/\{\{validTill\}\}/g, 'Dec 2024')
-      .replace(/\{\{year\}\}/g, new Date().getFullYear().toString());
+      .replace(/\{\{schoolName\}\}/g, schoolSettings.schoolNameEnglish)
+      .replace(/\{\{schoolNameBengali\}\}/g, schoolSettings.schoolNameBengali)
+      .replace(/\{\{validTill\}\}/g, schoolSettings.validTill)
+      .replace(/\{\{year\}\}/g, schoolSettings.academicYear);
   };
 
   if (!design) {
