@@ -36,7 +36,7 @@ export interface IStorage {
   // Print Jobs
   getPrintJob(id: string): Promise<PrintJob | undefined>;
   getPrintJobs(status?: string): Promise<PrintJob[]>;
-  getPrintJobsWithDetails(): Promise<(PrintJob & { student: Student; template: Template })[]>;
+  getPrintJobsWithDetails(): Promise<(PrintJob & { student: Student | null; template: Template | null })[]>;
   createPrintJob(printJob: InsertPrintJob): Promise<PrintJob>;
   updatePrintJob(id: string, printJob: Partial<InsertPrintJob>): Promise<PrintJob>;
   deletePrintJob(id: string): Promise<void>;
@@ -176,7 +176,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(asc(printJobs.priority), desc(printJobs.createdAt));
   }
 
-  async getPrintJobsWithDetails(): Promise<(PrintJob & { student: Student; template: Template })[]> {
+  async getPrintJobsWithDetails(): Promise<(PrintJob & { student: Student | null; template: Template | null })[]> {
     return await db.select({
       id: printJobs.id,
       studentId: printJobs.studentId,

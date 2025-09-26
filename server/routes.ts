@@ -21,7 +21,7 @@ const upload = multer({
       if (file.mimetype.startsWith("image/")) {
         cb(null, true);
       } else {
-        cb(new Error("Only image files are allowed for photos"), false);
+        cb(new Error("Only image files are allowed for photos"));
       }
     } else if (file.fieldname === "excel") {
       // Accept Excel and CSV files
@@ -33,7 +33,7 @@ const upload = multer({
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
       } else {
-        cb(new Error("Only Excel and CSV files are allowed"), false);
+        cb(new Error("Only Excel and CSV files are allowed"));
       }
     } else {
       cb(null, true);
@@ -60,6 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await storage.getStudents(page, limit, search);
       res.json(result);
     } catch (error) {
+      console.error('Failed to fetch students:', error);
       res.status(500).json({ message: "Failed to fetch students" });
     }
   });
@@ -72,6 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(student);
     } catch (error) {
+      console.error('Failed to fetch student:', error);
       res.status(500).json({ message: "Failed to fetch student" });
     }
   });
@@ -90,10 +92,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const student = await storage.createStudent(validatedData);
       res.status(201).json(student);
     } catch (error) {
+      console.error('Failed to create student:', error);
       if (req.file) {
         fs.unlinkSync(req.file.path); // Clean up uploaded file on error
       }
-      res.status(400).json({ message: error.message || "Failed to create student" });
+      const message = error instanceof Error ? error.message : "Failed to create student";
+      res.status(400).json({ message });
     }
   });
 
@@ -111,10 +115,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const student = await storage.updateStudent(req.params.id, validatedData);
       res.json(student);
     } catch (error) {
+      console.error('Failed to update student:', error);
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
-      res.status(400).json({ message: error.message || "Failed to update student" });
+      const message = error instanceof Error ? error.message : "Failed to update student";
+      res.status(400).json({ message });
     }
   });
 
@@ -134,18 +140,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Excel file is required" });
       }
 
-      const results = [];
-      const errors = [];
+      const results: any[] = [];
+      const errors: any[] = [];
       
       // Parse CSV/Excel file
       const fileContent = fs.readFileSync(req.file.path, "utf8");
       
-      csv.parse(fileContent, {
+      parse(fileContent, {
         columns: true,
         skip_empty_lines: true,
-      }, async (err, records) => {
+      }, async (err: any, records: any) => {
         if (err) {
-          fs.unlinkSync(req.file.path);
+          if (req.file) {
+            fs.unlinkSync(req.file.path);
+          }
           return res.status(400).json({ message: "Failed to parse file" });
         }
 
@@ -170,15 +178,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const student = await storage.createStudent(validatedData);
             results.push(student);
           } catch (error) {
+            const message = error instanceof Error ? error.message : "Invalid data";
             errors.push({
               row: record,
-              error: error.message || "Invalid data",
+              error: message,
             });
           }
         }
 
         // Clean up file
-        fs.unlinkSync(req.file.path);
+        if (req.file) {
+          fs.unlinkSync(req.file.path);
+        }
 
         res.json({
           imported: results.length,
@@ -188,6 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       });
     } catch (error) {
+      console.error('Failed to import students:', error);
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
@@ -202,6 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const templates = await storage.getTemplates(category);
       res.json(templates);
     } catch (error) {
+      console.error('Failed to fetch templates:', error);
       res.status(500).json({ message: "Failed to fetch templates" });
     }
   });
@@ -211,6 +224,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const templates = await storage.getPopularTemplates();
       res.json(templates);
     } catch (error) {
+      console.error('Failed to fetch popular templates:', error);
       res.status(500).json({ message: "Failed to fetch popular templates" });
     }
   });
@@ -233,7 +247,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const template = await storage.createTemplate(validatedData);
       res.status(201).json(template);
     } catch (error) {
-      res.status(400).json({ message: error.message || "Failed to create template" });
+      console.error('Failed to create template:', error);
+      const message = error instanceof Error ? error.message : "Failed to create template";
+      res.status(400).json({ message });
     }
   });
 
@@ -243,7 +259,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const template = await storage.updateTemplate(req.params.id, validatedData);
       res.json(template);
     } catch (error) {
-      res.status(400).json({ message: error.message || "Failed to update template" });
+      console.error('Failed to update template:', error);
+      const message = error instanceof Error ? error.message : "Failed to update template";
+      res.status(400).json({ message });
     }
   });
 
@@ -282,7 +300,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const printJob = await storage.createPrintJob(validatedData);
       res.status(201).json(printJob);
     } catch (error) {
-      res.status(400).json({ message: error.message || "Failed to create print job" });
+      console.error('Failed to create print job:', error);
+      const message = error instanceof Error ? error.message : "Failed to create print job";
+      res.status(400).json({ message });
     }
   });
 
@@ -292,7 +312,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const printJob = await storage.updatePrintJob(req.params.id, validatedData);
       res.json(printJob);
     } catch (error) {
-      res.status(400).json({ message: error.message || "Failed to update print job" });
+      console.error('Failed to update print job:', error);
+      const message = error instanceof Error ? error.message : "Failed to update print job";
+      res.status(400).json({ message });
     }
   });
 
@@ -311,6 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const stats = await storage.getStats();
       res.json(stats);
     } catch (error) {
+      console.error('Failed to fetch statistics:', error);
       res.status(500).json({ message: "Failed to fetch statistics" });
     }
   });
@@ -332,7 +355,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const setting = await storage.setSetting({ key, value, category });
       res.json(setting);
     } catch (error) {
-      res.status(400).json({ message: error.message || "Failed to save setting" });
+      console.error('Failed to save setting:', error);
+      const message = error instanceof Error ? error.message : "Failed to save setting";
+      res.status(400).json({ message });
     }
   });
 
