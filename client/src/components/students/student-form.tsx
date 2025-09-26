@@ -14,6 +14,7 @@ import { StudentFormData } from "@/types";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Camera } from "lucide-react";
+import { z } from "zod";
 
 interface StudentFormProps {
   onSuccess: () => void;
@@ -27,7 +28,7 @@ export default function StudentForm({ onSuccess, initialData }: StudentFormProps
 
   const form = useForm<StudentFormData>({
     resolver: zodResolver(insertStudentSchema.extend({
-      photo: require("zod").any().optional()
+      photo: z.any().optional()
     })),
     defaultValues: {
       nameEnglish: initialData?.nameEnglish || "",

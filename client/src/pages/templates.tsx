@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TemplateGallery from "@/components/templates/template-gallery";
 import { Plus, Search } from "lucide-react";
+import { Template } from "@shared/schema";
 
 export default function Templates() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
-  const { data: templates, isLoading } = useQuery({
+  const { data: templates, isLoading } = useQuery<Template[]>({
     queryKey: ["/api/templates", { category: category === "all" ? undefined : category }],
   });
 
-  const filteredTemplates = templates?.filter(template =>
+  const filteredTemplates = templates?.filter((template: Template) =>
     template.name.toLowerCase().includes(search.toLowerCase()) ||
     template.description?.toLowerCase().includes(search.toLowerCase())
   ) || [];
