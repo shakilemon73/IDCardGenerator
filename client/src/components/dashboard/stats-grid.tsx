@@ -2,24 +2,53 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Printer, Palette, Clock } from "lucide-react";
 
-interface StatsData {
-  totalStudents: number;
-  cardsPrinted: number;
-  templatesCount: number;
-  printQueue: number;
+interface AdvancedAnalyticsData {
+  totalStudents: {
+    current: number;
+    previousMonth: number;
+    monthOverMonthGrowth: string;
+  };
+  cardsPrinted: {
+    current: number;
+    previousWeek: number;
+    weekOverWeekGrowth: string;
+  };
+  templates: {
+    current: number;
+    newThisMonth: number;
+    newThisMonthText: string;
+  };
+  printQueue: {
+    current: number;
+    processing: number;
+    averageProcessingTime: number;
+    queueStatus: string;
+    estimatedTime: string;
+  };
 }
 
 interface StatsGridProps {
-  stats?: StatsData;
+  stats?: AdvancedAnalyticsData;
   isLoading: boolean;
 }
 
 export default function StatsGrid({ stats, isLoading }: StatsGridProps) {
+  // Determine change color based on growth
+  const getChangeColor = (change: string) => {
+    if (change.startsWith('+')) {
+      return 'text-green-600';
+    } else if (change.startsWith('-')) {
+      return 'text-red-600';
+    } else {
+      return 'text-blue-600';
+    }
+  };
+
   const statsCards = [
     {
       title: "Total Students",
-      value: stats?.totalStudents || 0,
-      change: "+12%",
+      value: stats?.totalStudents?.current || 0,
+      change: stats?.totalStudents?.monthOverMonthGrowth || "+0%",
       changeLabel: "from last month",
       icon: Users,
       iconBg: "bg-blue-100",
@@ -27,8 +56,8 @@ export default function StatsGrid({ stats, isLoading }: StatsGridProps) {
     },
     {
       title: "Cards Printed",
-      value: stats?.cardsPrinted || 0,
-      change: "+8%",
+      value: stats?.cardsPrinted?.current || 0,
+      change: stats?.cardsPrinted?.weekOverWeekGrowth || "+0%",
       changeLabel: "from last week",
       icon: Printer,
       iconBg: "bg-green-100",
@@ -36,8 +65,8 @@ export default function StatsGrid({ stats, isLoading }: StatsGridProps) {
     },
     {
       title: "Templates",
-      value: stats?.templatesCount || 0,
-      change: "3 new",
+      value: stats?.templates?.current || 0,
+      change: stats?.templates?.newThisMonthText || "0 new",
       changeLabel: "this month",
       icon: Palette,
       iconBg: "bg-purple-100",
@@ -45,9 +74,9 @@ export default function StatsGrid({ stats, isLoading }: StatsGridProps) {
     },
     {
       title: "Print Queue",
-      value: stats?.printQueue || 0,
-      change: "Processing",
-      changeLabel: "5 minutes remaining",
+      value: stats?.printQueue?.current || 0,
+      change: stats?.printQueue?.queueStatus || "Idle",
+      changeLabel: stats?.printQueue?.estimatedTime || "No jobs in queue",
       icon: Clock,
       iconBg: "bg-orange-100",
       iconColor: "text-orange-600",
@@ -95,7 +124,7 @@ export default function StatsGrid({ stats, isLoading }: StatsGridProps) {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-green-600 font-medium">{stat.change}</span>
+              <span className={`${getChangeColor(stat.change)} font-medium`}>{stat.change}</span>
               <span className="text-muted-foreground ml-2">{stat.changeLabel}</span>
             </div>
           </CardContent>

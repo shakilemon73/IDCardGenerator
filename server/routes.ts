@@ -936,16 +936,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Statistics API
-  app.get("/api/stats", async (req, res) => {
-    try {
-      const stats = await storage.getStats();
-      res.json(stats);
-    } catch (error) {
-      console.error('Failed to fetch statistics:', error);
-      res.status(500).json({ message: "Failed to fetch statistics" });
-    }
-  });
 
   // Settings API
   app.get("/api/settings", async (req, res) => {
@@ -1014,6 +1004,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Failed to initialize settings:', error);
       res.status(500).json({ message: "Failed to initialize settings" });
+    }
+  });
+
+  // Stats API - Advanced Analytics
+  app.get("/api/stats", async (req, res) => {
+    try {
+      console.log('Calling getAdvancedAnalytics...');
+      const analytics = await storage.getAdvancedAnalytics();
+      console.log('Analytics result:', JSON.stringify(analytics, null, 2));
+      res.json(analytics);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+      // Fallback to basic stats for debugging
+      console.log('Falling back to basic stats...');
+      const basicStats = await storage.getStats();
+      console.log('Basic stats:', basicStats);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({ message: "Failed to fetch stats", error: message });
+    }
+  });
+
+  // Printer Status API
+  app.get("/api/printer-status", async (req, res) => {
+    try {
+      const printerStatus = await storage.getPrinterStatus();
+      res.json(printerStatus);
+    } catch (error) {
+      console.error('Failed to fetch printer status:', error);
+      const message = error instanceof Error ? error.message : "Failed to fetch printer status";
+      res.status(500).json({ message });
     }
   });
 

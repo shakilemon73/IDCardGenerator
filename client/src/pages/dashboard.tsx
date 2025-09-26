@@ -3,17 +3,50 @@ import StatsGrid from "@/components/dashboard/stats-grid";
 import RecentStudents from "@/components/dashboard/recent-students";
 import QuickActions from "@/components/dashboard/quick-actions";
 import TemplateGallery from "@/components/templates/template-gallery";
+import type { Student, Template } from "@shared/schema";
+
+// Type for advanced analytics data
+interface AdvancedAnalyticsData {
+  totalStudents: {
+    current: number;
+    previousMonth: number;
+    monthOverMonthGrowth: string;
+  };
+  cardsPrinted: {
+    current: number;
+    previousWeek: number;
+    weekOverWeekGrowth: string;
+  };
+  templates: {
+    current: number;
+    newThisMonth: number;
+    newThisMonthText: string;
+  };
+  printQueue: {
+    current: number;
+    processing: number;
+    averageProcessingTime: number;
+    queueStatus: string;
+    estimatedTime: string;
+  };
+}
+
+// Type for students API response
+interface StudentsResponse {
+  students: Student[];
+  total: number;
+}
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<AdvancedAnalyticsData>({
     queryKey: ["/api/stats"],
   });
 
-  const { data: studentsData, isLoading: studentsLoading } = useQuery({
+  const { data: studentsData, isLoading: studentsLoading } = useQuery<StudentsResponse>({
     queryKey: ["/api/students", { page: 1, limit: 5 }],
   });
 
-  const { data: popularTemplates, isLoading: templatesLoading } = useQuery({
+  const { data: popularTemplates, isLoading: templatesLoading } = useQuery<Template[]>({
     queryKey: ["/api/templates/popular"],
   });
 
